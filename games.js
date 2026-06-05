@@ -270,7 +270,6 @@
         document.getElementById('scheme-picker').classList.remove('hidden');
         document.getElementById('start-controls').classList.add('hidden');
         document.getElementById('controls-heading').textContent = 'Choose Controls';
-        document.getElementById('controls-info').textContent = 'Choose your keys below.';
       } else if (currentGame === 'splat-haman' || currentGame === 'royal-run') {
         showScreen('game-char-picker-screen');
       } else {
@@ -279,7 +278,6 @@
         document.getElementById('scheme-picker').classList.remove('hidden');
         document.getElementById('start-controls').classList.add('hidden');
         document.getElementById('controls-heading').textContent = 'Choose Controls';
-        document.getElementById('controls-info').textContent = 'Player 1 picks keys, Player 2 uses the opposite set.';
       }
     });
   });
@@ -300,7 +298,6 @@
         document.getElementById('scheme-picker').classList.remove('hidden');
         document.getElementById('start-controls').classList.add('hidden');
         document.getElementById('controls-heading').textContent = label;
-        document.getElementById('controls-info').textContent = 'Player 1 (you) picks keys, Player 2 gets the opposite set.';
       } else {
         startGame();
       }
@@ -315,12 +312,6 @@
       document.getElementById('scheme-picker').classList.add('hidden');
       document.getElementById('start-controls').classList.remove('hidden');
       document.getElementById('controls-heading').textContent = 'Ready!';
-      const chosen = btn.dataset.scheme === 'wasd' ? 'WASD' : 'Arrow Keys';
-      const other = btn.dataset.scheme === 'wasd' ? 'Arrow Keys' : 'WASD';
-      const info = isMultiplayer
-        ? 'Player 1: ' + chosen + ' | Player 2: ' + other
-        : 'Controls: ' + chosen;
-      document.getElementById('controls-info').textContent = info;
     });
   });
 
