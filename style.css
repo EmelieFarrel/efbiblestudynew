@@ -211,7 +211,6 @@ input, textarea, select { font-family: inherit; font-size: inherit; }
   left: 0;
   right: 0;
   z-index: 1000;
-  height: var(--header-height);
   background: rgba(255,255,255,0.95);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -245,6 +244,29 @@ input, textarea, select { font-family: inherit; font-size: inherit; }
   display: block;
   height: 60px;
   width: auto;
+}
+.nav-update {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #7B6CDE;
+  margin-left: 12px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.nav-update-close {
+  background: none;
+  border: none;
+  color: #7B6CDE;
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 2px 4px;
+  cursor: pointer;
+  opacity: 0.6;
+}
+.nav-update-close:hover {
+  opacity: 1;
 }
 
 .nav-list {
@@ -1726,6 +1748,11 @@ a.resource-card {
   font-style: normal;
   font-weight: 700;
   color: var(--color-gold-light);
+}
+.footer-visitors {
+  margin-top: 16px;
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.7);
 }
 
 .site-footer h4 {

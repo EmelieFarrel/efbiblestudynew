@@ -100,36 +100,35 @@
     if (!list) return;
     var now = new Date();
     var DAYS = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
-    var localDateFmt = { month: 'long', day: 'numeric' };
-    var localTimeFmt = { hour: 'numeric', minute: '2-digit' };
 
     scheduleData.forEach(function(item) {
       var dayIndex = DAYS.indexOf(item.day.toLowerCase());
-      var next = new Date(now);
-      next.setDate(next.getDate() + ((dayIndex - next.getDay() + 7) % 7));
-      if (next <= now) next.setDate(next.getDate() + 7);
+      var nextFriday = new Date(now);
+      nextFriday.setDate(nextFriday.getDate() + ((dayIndex - nextFriday.getDay() + 7) % 7));
+      if (nextFriday <= now) nextFriday.setDate(nextFriday.getDate() + 7);
 
       for (var i = 0; i < 4; i++) {
-        var date = new Date(next);
-        date.setDate(date.getDate() + 7 * i);
+        var d = new Date(nextFriday);
+        d.setDate(d.getDate() + 7 * i);
 
-        // get date parts in ET
-        var etDateStr = date.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
-        var p = etDateStr.split('-');
-        var ey = parseInt(p[0]), em = parseInt(p[1]) - 1, ed = parseInt(p[2]);
+        // Get the date as it falls in ET
+        var etParts = d.toLocaleDateString('en-CA', { timeZone: 'America/New_York' }).split('-');
+        var ey = parseInt(etParts[0]), em = parseInt(etParts[1]) - 1, ed = parseInt(etParts[2]);
 
-        // determine ET offset for that date
+        // Compute UTC timestamp for 6pm ET on that date
+        // First find the ET offset from UTC (e.g., -4 for EDT, -5 for EST)
         var noonUTC = Date.UTC(ey, em, ed, 12, 0, 0);
-        var noonHr = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', hour12: false }).format(new Date(noonUTC));
-        var offset = 12 - parseInt(noonHr);
+        var etHourAtNoonUTC = parseInt(new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', hour12: false }).format(new Date(noonUTC)));
+        var etOffset = 12 - etHourAtNoonUTC; // positive number: hours ET is behind UTC
 
-        // create Dates for start and end in local time
-        var startLocal = new Date(Date.UTC(ey, em, ed, item.hour + offset, item.minute, 0));
-        var endLocal = new Date(Date.UTC(ey, em, ed, item.hour + 1 + offset, item.minute, 0));
+        // Event UTC = 18:00 ET + offset hours
+        var eventUTC = Date.UTC(ey, em, ed, item.hour + etOffset, item.minute, 0);
+        var startDate = new Date(eventUTC);
+        var endDate = new Date(eventUTC + 3600000);
 
-        var dateStr = startLocal.toLocaleDateString('en-US', localDateFmt);
-        var startTime = startLocal.toLocaleTimeString('en-US', localTimeFmt);
-        var endTime = endLocal.toLocaleTimeString('en-US', localTimeFmt);
+        var dateStr = startDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+        var startTime = startDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        var endTime = endDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 
         var li = document.createElement('li');
         li.className = 'schedule-item';
@@ -338,6 +337,24 @@
 
       window.location.href = 'mailto:efbiblestudy@gmail.com?subject=Website Feedback Survey&body=' + encodeURIComponent(body);
     });
+  }
+
+  /* ---------- NAV UPDATE DISMISS ---------- */
+  if (localStorage.getItem('efbs_update_closed')) {
+    document.getElementById('nav-update').style.display = 'none';
+  }
+  document.getElementById('nav-update-close').addEventListener('click', function() {
+    document.getElementById('nav-update').style.display = 'none';
+    localStorage.setItem('efbs_update_closed', '1');
+  });
+
+  /* ---------- VISITOR COUNT ---------- */
+  var countEl = document.getElementById('visitor-count');
+  if (countEl) {
+    fetch('https://api.countapi.xyz/hit/efbiblestudy/visits')
+      .then(function(r) { return r.json(); })
+      .then(function(d) { if (d.value) countEl.textContent = d.value; })
+      .catch(function() { countEl.textContent = '—'; });
   }
 
 })();
