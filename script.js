@@ -339,13 +339,43 @@
     });
   }
 
-  /* ---------- NAV UPDATE DISMISS ---------- */
-  if (localStorage.getItem('efbs_update_closed')) {
-    document.getElementById('nav-update').style.display = 'none';
+  /* ---------- CONTACT FORM ---------- */
+  var contactForm = document.getElementById('contact-form');
+  var contactSuccess = document.getElementById('form-success');
+  if (contactForm) {
+    contactForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var name = document.getElementById('contact-name').value.trim();
+      var email = document.getElementById('contact-email').value.trim();
+      var subject = document.getElementById('contact-subject').value || 'General';
+      var message = document.getElementById('contact-message').value.trim();
+      if (!name || !email || !message) return;
+      var body = 'Name: ' + name + '\nEmail: ' + email + '\nSubject: ' + subject + '\n\nMessage:\n' + message;
+      window.location.href = 'mailto:efbiblestudy@gmail.com?subject=Contact: ' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+      contactForm.classList.add('hidden');
+      contactSuccess.classList.remove('hidden');
+    });
   }
+
+  /* ---------- PRAYER FORM ---------- */
+  var prayerForm = document.getElementById('prayer-form');
+  var prayerSuccess = document.getElementById('prayer-success');
+  if (prayerForm) {
+    prayerForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var name = document.getElementById('prayer-name').value.trim() || 'Anonymous';
+      var request = document.getElementById('prayer-request').value.trim();
+      if (!request) return;
+      var body = 'Prayer request from: ' + name + '\n\n' + request;
+      window.location.href = 'mailto:efbiblestudy@gmail.com?subject=Prayer Request&body=' + encodeURIComponent(body);
+      prayerForm.classList.add('hidden');
+      prayerSuccess.classList.remove('hidden');
+    });
+  }
+
+  /* ---------- NAV UPDATE DISMISS ---------- */
   document.getElementById('nav-update-close').addEventListener('click', function() {
     document.getElementById('nav-update').style.display = 'none';
-    localStorage.setItem('efbs_update_closed', '1');
   });
 
   /* ---------- VISITOR COUNT ---------- */
