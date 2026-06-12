@@ -1749,11 +1749,6 @@ a.resource-card {
   font-weight: 700;
   color: var(--color-gold-light);
 }
-.footer-visitors {
-  margin-top: 16px;
-  font-size: 0.9rem;
-  color: rgba(255,255,255,0.7);
-}
 
 .site-footer h4 {
   font-size: 1rem;

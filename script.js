@@ -378,13 +378,5 @@
     document.getElementById('nav-update').style.display = 'none';
   });
 
-  /* ---------- VISITOR COUNT ---------- */
-  var countEl = document.getElementById('visitor-count');
-  if (countEl) {
-    fetch('https://api.countapi.xyz/hit/efbiblestudy/visits')
-      .then(function(r) { return r.json(); })
-      .then(function(d) { if (d.value) countEl.textContent = d.value; })
-      .catch(function() { countEl.textContent = '—'; });
-  }
 
 })();
