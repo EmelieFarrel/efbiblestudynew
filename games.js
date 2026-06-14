@@ -1981,14 +1981,21 @@
         const p = players[pi];
         if (p.invincible > 0) continue;
         if (g.x > p.x - 20 && g.x < p.x + p.w + 20 && Math.abs(g.y - p.y) < 40) {
-          g.caught = true; rr.hits++;
-          p.invincible = 30;
-          triggerShake(6);
-          spawnParticles(g.x + g.w / 2, g.y + g.h / 2, '#1b5e20', 6, 3);
-          sfxHit();
-          if (rr.hits >= rr.maxHits) {
+          g.caught = true;
+          if (isMultiplayer) {
+            rr.hits = rr.maxHits;
             sfxLose();
-            endGame(false, rr.score, 'The guards caught you! Escape again!');
+            endGame(false, rr.score, 'The guard caught Vashti! Game over!');
+          } else {
+            rr.hits++;
+            p.invincible = 30;
+            triggerShake(6);
+            spawnParticles(g.x + g.w / 2, g.y + g.h / 2, '#1b5e20', 6, 3);
+            sfxHit();
+            if (rr.hits >= rr.maxHits) {
+              sfxLose();
+              endGame(false, rr.score, 'The guards caught you! Escape again!');
+            }
           }
           break;
         }
@@ -2333,6 +2340,7 @@
     }
     drawRoyalRunPlayer(rr.player, '#c62828', '#8b1a1a');
 
+    ctx.restore();
     renderParticles();
     endShake();
 

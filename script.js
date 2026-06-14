@@ -8,11 +8,13 @@
     toggle.addEventListener('click', function() {
       const expanded = toggle.getAttribute('aria-expanded') === 'true' ? false : true;
       navMenu.classList.toggle('nav-open');
+      toggle.classList.toggle('nav-open');
       toggle.setAttribute('aria-expanded', expanded);
     });
     document.querySelectorAll('.nav-link').forEach(function(link) {
       link.addEventListener('click', function() {
         navMenu.classList.remove('nav-open');
+        toggle.classList.remove('nav-open');
         toggle.setAttribute('aria-expanded', 'false');
       });
     });
