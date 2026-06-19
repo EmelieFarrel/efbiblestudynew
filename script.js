@@ -148,19 +148,31 @@
       minutes: document.getElementById('countdown-minutes'),
       seconds: document.getElementById('countdown-seconds')
     };
-    var nextStudy = getNextStudyTime();
+
     function getNextStudyTime() {
-      var now = new Date();
-      var target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 10, 0, 0);
-      var dayIndex = 6; // Saturday
-      while (target.getDay() !== dayIndex) {
-        target.setDate(target.getDate() + 1);
+      var now = Date.now();
+      // Look through the next 14 days for the next Friday in ET with a future event
+      for (var d = 0; d < 14; d++) {
+        var candidate = new Date(now + d * 86400000);
+        // Check if this day is Friday in ET
+        var dayInET = candidate.toLocaleDateString('en-US', { timeZone: 'America/New_York', weekday: 'long' }).toLowerCase();
+        if (dayInET !== 'friday') continue;
+        // Get date parts in ET
+        var etDateStr = candidate.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+        var p = etDateStr.split('-');
+        var ey = parseInt(p[0]), em = parseInt(p[1]) - 1, ed = parseInt(p[2]);
+        // Compute UTC timestamp for 6 PM ET on that date
+        var noonUTC = Date.UTC(ey, em, ed, 12, 0, 0);
+        var noonHr = parseInt(new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', hour12: false }).format(new Date(noonUTC)));
+        var etOffset = 12 - noonHr;
+        var eventUTC = Date.UTC(ey, em, ed, 18 + etOffset, 0, 0);
+        if (eventUTC > now) return eventUTC;
       }
-      if (target <= now) {
-        target.setDate(target.getDate() + 7);
-      }
-      return target.getTime();
+      return 0;
     }
+
+    var nextStudy = getNextStudyTime();
+
     function tick() {
       var now = Date.now();
       var diff = nextStudy - now;

@@ -2044,6 +2044,7 @@ a.resource-card {
   .footer-grid { grid-template-columns: 1fr; }
 
   .scroll-top { bottom: 20px; right: 20px; width: 44px; height: 44px; font-size: 1.1rem; }
+  .feedback-btn { bottom: 70px; right: 20px; padding: 8px 14px; font-size: 0.8rem; }
 }
 
 @media (max-width: 480px) {
