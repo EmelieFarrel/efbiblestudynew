@@ -100,20 +100,35 @@
   function initSchedule() {
     var list = document.getElementById('schedule-list');
     if (!list) return;
-    var now = new Date();
-    var DAYS = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+    var now = Date.now();
 
     scheduleData.forEach(function(item) {
-      var dayIndex = DAYS.indexOf(item.day.toLowerCase());
-      var nextFriday = new Date(now);
-      nextFriday.setDate(nextFriday.getDate() + ((dayIndex - nextFriday.getDay() + 7) % 7));
-      if (nextFriday <= now) nextFriday.setDate(nextFriday.getDate() + 7);
+      // Find the next ET day matching item.day (using same UTC approach as countdown)
+      var startDate = null;
+      for (var d = 0; d < 14; d++) {
+        var candidate = new Date(now + d * 86400000);
+        var dayInET = candidate.toLocaleDateString('en-US', { timeZone: 'America/New_York', weekday: 'long' }).toLowerCase();
+        if (dayInET !== item.day.toLowerCase()) continue;
+        var etDateStr = candidate.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+        var p = etDateStr.split('-');
+        var ey = parseInt(p[0]), em = parseInt(p[1]) - 1, ed = parseInt(p[2]);
+
+        // Compute event UTC for this date to check if it's still in the future
+        var noonUTC = Date.UTC(ey, em, ed, 12, 0, 0);
+        var noonHr = parseInt(new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', hour12: false }).format(new Date(noonUTC)));
+        var etOffset = 12 - noonHr;
+        var eventUTC = Date.UTC(ey, em, ed, item.hour + etOffset, item.minute, 0);
+
+        if (eventUTC > now) {
+          startDate = candidate.getTime();
+          break;
+        }
+      }
+
+      if (startDate === null) return;
 
       for (var i = 0; i < 4; i++) {
-        var d = new Date(nextFriday);
-        d.setDate(d.getDate() + 7 * i);
-
-        // Get the date as it falls in ET
+        var d = new Date(startDate + i * 7 * 86400000);
         var etParts = d.toLocaleDateString('en-CA', { timeZone: 'America/New_York' }).split('-');
         var ey = parseInt(etParts[0]), em = parseInt(etParts[1]) - 1, ed = parseInt(etParts[2]);
 
@@ -125,11 +140,11 @@
 
         // Event UTC = 18:00 ET + offset hours
         var eventUTC = Date.UTC(ey, em, ed, item.hour + etOffset, item.minute, 0);
-        var startDate = new Date(eventUTC);
+        var eventStart = new Date(eventUTC);
         var endDate = new Date(eventUTC + 3600000);
 
-        var dateStr = startDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
-        var startTime = startDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        var dateStr = eventStart.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+        var startTime = eventStart.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
         var endTime = endDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 
         var li = document.createElement('li');
